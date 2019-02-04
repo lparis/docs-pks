@@ -20,6 +20,7 @@ Profile Type 								            | Description
 [Pod Subnet Prefix](#pod-prefix)			  			| Specify the size of the pod subnet.
 [Custom Floating IP](#floating-ip)      				| Specify a custom floating IP pool.
 [Edge Router Selection](#multi-t0)				    	| Specify the NSX-T Tier-0 router where Kubernetes node and Pod networks will be connected to.
+[Node DNS](#node-dns)									| 
 
 ## <a id="format"></a> Network Profile Format
 
@@ -342,3 +343,28 @@ For example, the following network profiles define two tenant Tier-0 routers wit
     If the parameter is set to <code>true</code>, the custom Pods IP Block subnet is routable and NAT is not used.
     If <code>pod_routable</code> is not present or is set to <code>false</code>,
     the custom Pods IP Block is not routable and the tenant Tier-0 is deployed in NAT mode.</p>
+
+## <a id='multi-t0'></a> Node DNS
+
+Node DNS lets you customize one or more DNS servers for your PKS deployment.
+
+During configuration of BOSH Director for PKS, when you define the network, you specify the IP address of the DNS Server. For more information, see [BOSH Configuration for PKS > Create Networks](./vsphere-nsxt-om-config.html#create-networks).
+
+Node DNS lets you specify an external DNS server for fallback lookup, overriding the BOSH DNS backup DNS server on a per-cluster basis. Elements in the `nodes-dns` override what is configured in the BOSH tile. 
+
+The `node_dns` field accepts an array with up to 3 elements. An element must be a valid IP address.
+
+An example of network profile with `nodes_dns` configuration is as follows:
+
+    ```
+    node-dns.json
+    {
+      "description": "Overwrite global DNS",
+      "name": "nodes_dns_multiple",
+      "parameters": {
+        "nodes_dns": [
+        	"8.8.8.8", "192.168.115.1", "192.168.116.1"
+        ]
+      }
+    }
+    ```
