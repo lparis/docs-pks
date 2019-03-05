@@ -1,0 +1,116 @@
+---
+title: FAQs for Upgrading PKS
+owner: PKS
+topictype: pks upgrade
+---
+
+<strong><%= modified_date %></strong>
+
+This topic provides answers to frequently asked questions (FAQs) for upgrading Enterprise PKS and PKS-provisioned Kubernetes clusters.
+
+This topic assumes you have read all other accompanying upgrade documentation, including:
+
+- [What Happens During PKS Upgrades](understanding-upgrades.html)
+- Upgrading PKS
+- [Upgrading PKS with NSX-T](upgrade-pks-nsxt.html)
+- Maintaining Workload Uptime
+- Configuring the Upgrade Pipeline
+
+## What version of Kubernetes does the upgrade install?
+
+Check the release notes before upgrading. The supported Kubernetes version is listed there.
+
+## Can I manually update the Kubernetes version that PKS uses?
+
+No. Do not manually upgrade your Kubernetes version. The PKS service includes the compatible Kubernetes version.
+
+## How do I update Kubernetes certificates?
+
+PKS does this for you.
+
+## <a id="canary"></a>Canary Deployents
+
+### <a id="canary"></a>What is a canary deployment of a Kubernetes cluster?
+
+A canary deployment is a test deployment. PKS performs canary deployments during an upgrade of Kubernetes clusters.
+
+Canary means the first Kubernetes master node is upgraded as a test. If successful, BOSH will continue the upgrade process for all other Kubernetes master nodes. Canary means first K8s worker  node is upgraded as a test. If successful, BOSH will continue the upgrade process for all other K8s worker nodes.
+
+PKS does not perform canary deployments of other components, such as PKS Magement Plane components (PKS API, Ops Manager, BOSH Director).
+
+### <a id="canary"></a>How is the number of canary deployments determined?
+
+For each Kubernetes cluster provisioned by PKS, there are two canary deployments: 1 for the master nodes and 1 for the worker nodes. 
+
+A canary deployment is a test deployment. PKS performs canary deployments during an upgrade of Kubernetes clusters.
+
+Canary means the first Kubernetes master node is upgraded as a test. If successful, BOSH will continue the upgrade process for all other Kubernetes master nodes. Canary means first K8s worker  node is upgraded as a test. If successful, BOSH will continue the upgrade process for all other K8s worker nodes.
+
+### <a id="canary"></a>Does the number of canary instances affect the upgrade time?
+
+That depends. If the canary depoyment fails, the canary saves times because the upgrade will cease immediately. If the canary succeeds, the deployment time will be increased by a factor of 1 x the average time it takes to deploy a master or woker node.
+
+### <a id="canary"></a>What happens when a canary deployment fails?
+
+When canary instance fails, how will the user know ? Are there any logs, error messages? What are typical reasons canary instances fail and how do we resolve them?
+
+## <a id="canary"></a>What does "recreate" mean in context of a PKS upgrade.
+
+5.	Why are PKS API server, clusters, and master & worker nodes recreated? What does *recreate* mean - what steps happen?
+Does it mean that the VM are Repaved
+
+PKS supports zero-downtime upgrades. To achieve zero-downtime, during an upgrade the PKS API Server as well as all Kubernetes master and worker nodes are recreated. This means that the existing VMs remain running while a duplicate VM is replicated or recreated.
+ 
+## <a id="stemcell-tile"></a>What is the difference between a stemcell and a Tile upgrade?
+
+What is the difference between a stemcell and a Tile upgrade. Are critical patches shipped as stemcells?
+
+Stemcells are base operating system templates for VMs, such as Ubuntu. The PKS Tile is actual PKS software. 
+ 
+### Does the stemcell upgrade of VM happen cluster by cluster?
+
+Yes always cluster by cluster as per nija training( Kindly verify)
+
+## Single vs. Multiple Master
+ 
+8.	During single master cluster upgrade, one can't interact with that cluster.  In the case of multi master cluster, is the cluster still available? Yes 
+9.	PKS Tile Only upgrade: API server is recreated. Does this mean the PKS control/management plane upgrade? What Upgrade errands off (prevents cliuster upgrades). Clusters are only allowed to be one version behind.
+Upgrade errands off (prevents cliuster upgrades) Errands are a set of tasks that will be performed post installation , these can be configured in the configuration pane of the tile.
+ 
+## What is a BOSH errand? 
+
+What are BOSH errands? 
+
+### Can we specify order or to limit to certain clusters?
+
+No. The order that BOSH errands run is not configurable. You can select which BOSH errands to enable, which affects the ordering.
+ 
+### What happens to transactions in flight when a cluster upgrade happens?
+ 
+### Do we have a health watch for PKS? 
+
+To verify the health of your Kubernetes environment, see [Verifying Deployment Health](verify-health.html#k8s).
+
+## While upgrading BOSH or Opsman is there any Impact to PKS and K8s clusters?
+
+No. Kubernetes clusters will not be impacted when you upgrade Ops Manager or BOSH Director.
+ 
+##	Monitoring and Alerts
+
+Disable API server monitoring as it will be down and then come up. Same for VMs, but VMs are ephemeral (I dont get the need for this, can't VMs have a block storage attached to it)
+ 
+15.	Preventing upgrade failures, or reasons upgrades can fail:
+                     Backup/Restore in place and tried.
+                    Workers close to their capacity (use min 3 worker VMs, multiple replicas), scale up before upgrade
+                     What happens during upgrades that the worker capacity is used?
+                    Is Rollback upgrades possible ? (Is'nt this a canary upgrade process ??)
+ 
+
+16.	When upgrading the clusters if the cluster was to be recreated on a single cluster instance , what happens to the configuration settings that have been defined for PKS?
+ 
+
+## Why do upgrades take hours to complete even if I turn off errands?
+
+
+## Is there a post upgrade checklist available?
+
